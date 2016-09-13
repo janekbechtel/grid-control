@@ -1,5 +1,5 @@
 codecov:
-  branch: testsuite
+  branch: testing
 comment:
   layout: header, changes, diff
 coverage:

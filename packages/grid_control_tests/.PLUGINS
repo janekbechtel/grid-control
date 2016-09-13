@@ -1,0 +1,16 @@
+  * hpfwk.hpf_plugin Plugin
+
+   * grid_control.gc_plugin ConfigurablePlugin
+
+    * grid_control.datasets.provider_base DataProvider
+
+     * grid_control_tests.plugins_testsuite TestsuiteProvider
+
+    * grid_control.gc_plugin NamedPlugin
+
+     * grid_control.backends.wms WMS
+
+      * grid_control.backends.wms BasicWMS
+
+       * grid_control_tests.plugins_testsuite TestsuiteWMS
+
