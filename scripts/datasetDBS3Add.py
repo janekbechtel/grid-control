@@ -14,7 +14,8 @@
 # | limitations under the License.
 
 import os, sys, logging
-from gcSupport import FileMutex, Options, getConfig, scriptOptions, utils
+from gcSupport import FileMutex, Options, scriptOptions, utils
+from grid_control.config import create_config
 from grid_control.datasets import DataProvider, DatasetError
 from grid_control_cms.dbs3_input_validation import validate_dbs3_json
 from grid_control_cms.dbs3_lite_client import DBS3LiteClient
@@ -210,18 +211,18 @@ def discover_blocks(options):
 	if os.path.isdir(options.args[0]):
 		workDir = os.path.abspath(os.path.normpath(options.args[0]))
 	else:
-		workDir = getConfig(config_file = options.args[0]).get_work_path()
+		workDir = create_config(config_file=options.args[0]).get_work_path()
 	if not options.opts.tempdir:
 		options.opts.tempdir = os.path.join(workDir, 'dbs')
 	if not os.path.exists(options.opts.tempdir):
 		os.mkdir(options.opts.tempdir)
 
 	# get provider with dataset information
+	config = create_config(config_dict = {'dataset': options.config_dict}, load_old_config=False)
 	if options.opts.input_file:
-		provider = DataProvider.create_instance('ListProvider', getConfig(), options.opts.input_file, None)
+		provider = DataProvider.create_instance('ListProvider', config, 'dataset', options.opts.input_file)
 	else:
-		config = getConfig(config_dict = {'dataset': options.config_dict})
-		provider = DataProvider.create_instance('DBSInfoProvider', config, options.args[0], None)
+		provider = DataProvider.create_instance('DBSInfoProvider', config, 'dataset', options.args[0])
 
 	blocks = provider.get_block_list_cached(show_stats = False)
 	DataProvider.save_to_file(os.path.join(options.opts.tempdir, 'dbs.dat'), blocks)

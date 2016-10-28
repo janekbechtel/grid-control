@@ -229,7 +229,7 @@ class OutputDirsFromConfig(InfoScanner):
 	def __init__(self, config, datasource_name):
 		InfoScanner.__init__(self, config, datasource_name)
 		ext_config_fn = config.get_path('source config')
-		ext_config_raw = create_config(ext_config_fn, use_default_files=True)
+		ext_config_raw = create_config(ext_config_fn, load_only_old_config=True)
 		ext_config = ext_config_raw.change_view(set_sections=['global'])
 		self._ext_workdir = ext_config.get_work_path()
 		logging.getLogger().disabled = True
@@ -293,7 +293,7 @@ class ParentLookup(InfoScanner):
 		self._parent_merge = config.get_bool('merge parents', False)
 		# cached "parent lfn parts" (plfnp) to "parent dataset name" (pdn) maps
 		self._plfnp2pdn_cache = {}  # the maps are stored for different parent_dataset_expr
-		self._empty_config = create_config()
+		self._empty_config = create_config(use_default_files=False, load_old_config=False)
 		self._read_plfnp_map(config, self._parent_source)  # read from configured parent source
 
 	def get_guard_keysets(self):
@@ -329,7 +329,7 @@ class ParentLookup(InfoScanner):
 		if parent_dataset_expr and (parent_dataset_expr not in self._plfnp2pdn_cache):
 			# read parent source and fill lfnMap with parent_lfn_parts -> parent dataset name mapping
 			map_plfnp2pdn = self._plfnp2pdn_cache.setdefault(parent_dataset_expr, {})
-			for block in DataProvider.iter_blocks_from_expr(config, parent_dataset_expr):
+			for block in DataProvider.iter_blocks_from_expr(self._empty_config, parent_dataset_expr):
 				for fi in block[DataProvider.FileList]:
 					map_plfnp2pdn[self._get_lfnp(fi[DataProvider.URL])] = block[DataProvider.Dataset]
 		return self._plfnp2pdn_cache.get(parent_dataset_expr, {})  # return cached mapping

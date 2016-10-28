@@ -130,7 +130,7 @@ def handle_abort_interrupt(signum, frame):
 
 
 # create workflow from config and do initial processing steps
-def gc_create_workflow(config):
+def gc_create_workflow(config, do_freeze=True, **kwargs):
 	# set up signal handler for interrupts and debug session requests
 	signal.signal(signal.SIGURG, handle_debug_interrupt)
 	signal.signal(signal.SIGINT, handle_abort_interrupt)
@@ -159,8 +159,9 @@ def gc_create_workflow(config):
 	(action_delete, action_reset) = get_actions(config.change_view(set_sections=['action']))
 
 	# Create workflow and freeze config settings
-	workflow = global_config.get_plugin('workflow', 'Workflow:global', cls='Workflow')
-	config.factory.freeze(write_config=config.get_state('init', detail='config'))
+	workflow = global_config.get_plugin('workflow', 'Workflow:global', cls='Workflow', pkwargs=kwargs)
+	if do_freeze:
+		config.factory.freeze(write_config=config.get_state('init', detail='config'))
 
 	# Give config help
 	if help_cfg or help_scfg:

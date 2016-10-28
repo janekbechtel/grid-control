@@ -25,7 +25,7 @@ from python_compat import lfilter
 
 
 def create_config(config_file=None, config_dict=None, use_default_files=False,
-		additional=None, register=False, load_old_config=True):
+		additional=None, register=False, load_old_config=True, load_only_old_config=False):
 	filler_list = []
 	if use_default_files:
 		filler_list.append(ConfigFiller.create_instance('DefaultFilesConfigFiller'))
@@ -36,6 +36,9 @@ def create_config(config_file=None, config_dict=None, use_default_files=False,
 	filler_list.extend(additional or [])
 	filler = ConfigFiller.create_instance('MultiConfigFiller', filler_list)
 	config = ConfigFactory(filler, config_file, load_old_config).get_config()
+	if load_only_old_config:
+		return create_config(config_file=os.path.join(config.get_work_path(), 'work.conf'),
+			use_default_files=False, load_old_config=False, register=register)
 	if register:
 		GCLogHandler.config_instances.append(config)
 	return config

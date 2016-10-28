@@ -136,7 +136,7 @@ class GridEngine(PBSGECommon):
 
 	def __init__(self, config, name):
 		cancel_executor = CancelJobsWithProcessBlind(config, 'qdel',
-			fmt = lambda wms_id_list: [str.join(',', wms_id_list)], unknownID = ['Unknown Job Id'])
+			fmt = lambda wms_id_list: [str.join(',', wms_id_list)], unknownID = 'Unknown Job Id')
 		PBSGECommon.__init__(self, config, name,
 			cancel_executor = cancel_executor,
 			check_executor = CheckJobsMissingState(config, GridEngine_CheckJobs(config)),

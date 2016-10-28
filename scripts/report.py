@@ -14,7 +14,8 @@
 # | limitations under the License.
 
 import sys
-from gcSupport import Activity, JobSelector, Options, displayPluginList, getConfig, get_pluginList, scriptOptions, utils
+from gcSupport import Activity, JobSelector, Options, displayPluginList, get_pluginList, scriptOptions, utils
+from grid_control_api import gc_create_config, gc_create_workflow
 
 
 parser = Options(usage = '%s [OPTIONS] <config file>')
@@ -34,12 +35,12 @@ if len(options.args) != 1:
 
 def main(opts, args):
 	# try to open config file
-	config = getConfig(args[0], section = 'global')
+	config = gc_create_config(config_file=args[0], load_only_old_config=True)
 
 	# Initialise task module
 	task = None
 	if opts.use_task:
-		task = config.get_plugin('workflow', 'Workflow:global', cls = 'Workflow', pargs = ('task',)).task
+		task = gc_create_workflow(config, abort='task').task
 
 	# Initialise job database
 	job_db = config.get_plugin('job database', 'TextFileJobDB', cls = 'JobDB')
