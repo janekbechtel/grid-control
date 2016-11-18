@@ -89,6 +89,12 @@ export GC_WORKDIR="`pwd`/workdir"
 export CMSSW_SEARCH_PATH="$CMSSW_SEARCH_PATH:$GC_WORKDIR"
 mkdir -p "$GC_WORKDIR"; cd "$GC_WORKDIR"
 my_move "$GC_SCRATCH" "$GC_WORKDIR" "$SB_INPUT_FILES $SE_INPUT_FILES $CMSSW_PROLOG_SB_IN_FILES $CMSSW_EPILOG_SB_IN_FILES"
+
+# If dataset files copied via SRM available, then move them too
+for DATASET_SRM_FILE in $DATASET_SRM_FILES; do
+        my_move "$GC_SCRATCH" "$GC_WORKDIR" "$(basename $DATASET_SRM_FILE)"
+done
+
 echo
 echo "==========================="
 timestamp "CMSSW_STARTUP" "DONE"
