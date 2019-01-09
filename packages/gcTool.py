@@ -33,6 +33,7 @@ def parse_cmd_line(cmd_line_args):
 	parser.addBool(None, 'h', 'help',          default = False)
 	parser.addBool(None, 'i', 'init',          default = False)
 	parser.addBool(None, 'q', 'resync',        default = False)
+	parser.addBool(None, ' ', 'createwd',      default = False)
 	parser.addBool(None, 's', 'no-submission', default = True,  dest = 'submission')
 	parser.addBool(None, 'G', 'gui',           default = False, dest = 'gui_ansi')
 	parser.addAccu(None, 'v', 'verbose')
@@ -89,6 +90,7 @@ class OptsConfigFiller(Plugin.getClass('ConfigFiller')):
 			'global': { 'gui': opts.gui, 'submission': opts.submission },
 			'jobs': { 'max retry': opts.max_retry, 'selected': opts.job_selector },
 			'logging': { 'debug mode': opts.debug },
+			'createwd': {'create wd': opts.createwd},
 		}
 		for section in cmd_line_config_map:
 			for (option, value) in cmd_line_config_map[section].items():
@@ -133,7 +135,9 @@ def gc_create_workflow(config):
 		if not global_config.getState('init'):
 			logging.getLogger('user').warning('Starting initialization of %s!', global_config.getWorkPath())
 			global_config.setState(True, 'init')
-		if global_config.getChoiceYesNo('workdir create', True,
+
+		if global_config._configView._curContainer._content['create wd'][0].value or \
+		   global_config.getChoiceYesNo('workdir create', True,
 				interactive_msg = 'Do you want to create the working directory %s?' % global_config.getWorkPath()):
 			utils.ensureDirExists(global_config.getWorkPath(), 'work directory')
 	for package_paths in global_config.getPaths('package paths', []):
@@ -185,7 +189,7 @@ def run(args = None, intro = True):
 			sys.exit(workflow.run())
 		finally:
 			sys.stdout.write('\n')
-	except SystemExit: # avoid getting caught for Python < 2.5 
+	except SystemExit: # avoid getting caught for Python < 2.5
 		raise
 	except Exception: # coverage overrides sys.excepthook
 		gc_excepthook(*sys.exc_info())
