@@ -130,7 +130,10 @@ def create_dbs3_json_blocks(opts, dataset_blocks):
 			origin_site_name = site_db.se_to_cms_name(block[DataProvider.Locations][0])[0]
 		except IndexError:
 			origin_site_name = 'UNKNOWN'
-
+		print origin_site_name
+		if origin_site_name == "T1_DE_KIT":
+			origin_site_name = "T1_DE_KIT_Disk"
+		print origin_site_name
 		block_dump['block'] = {'block_name': DataProvider.bName(block), 'block_size': block_size,
 			'file_count': len(block[DataProvider.FileList]), 'origin_site_name': origin_site_name}
 		if opts.do_close_blocks:
